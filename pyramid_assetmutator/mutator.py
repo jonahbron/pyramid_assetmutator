@@ -139,6 +139,9 @@ class Mutator(object):
             # Do various check/path settings
             dest_ext = self.mutator['ext']
 
+            existing_pattern = '%s%s.*.%s' % (self.prefix, self.src_name,
+                                                   dest_ext)
+
             if self.check_method == 'exists':
                 self.dest_filename = '%s%s.%s' % (self.prefix, self.src_name,
                                                   dest_ext)
@@ -156,6 +159,11 @@ class Mutator(object):
             self.dest_fullpath = os.path.join(
                 self.dest_dirpath,
                 self.dest_filename
+            )
+
+            self.dest_existing_fullpath = os.path.join(
+                self.dest_dirpath,
+                existing_pattern
             )
 
             # Set the new assetpath to be returned to the template
@@ -248,6 +256,10 @@ class Mutator(object):
 
             if not os.path.exists(new_dirname):
                 os.makedirs(new_dirname)
+
+            existing_list = glob.glob(self.dest_existing_fullpath)
+            for f in existing_list:
+                os.remove(f)
 
             with open(self.dest_fullpath, 'wb') as f:
                 f.write(data)
